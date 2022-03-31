@@ -14,16 +14,12 @@ export const getNpsGroups = async () => {
     {
       $group: {
         _id: {
-          $cond: {
-            if: { $gte: ["$value", 9] },
-            then: "promoters",
-            else: {
-              $cond: {
-                if: { $gte: ["$value", 7] },
-                then: "passives",
-                else: "detractors",
-              },
-            },
+          $switch: {
+            branches: [
+              { case: { $gte: ['$value', 9] }, then: "promoters" },
+              { case: { $gte: ['$value', 7] }, then: "passives" },
+            ],
+            default: "detractors",
           },
         },
         count: { $sum: 1 },
