@@ -1,28 +1,41 @@
-import {Router} from "express"
+import { Router } from "express"
+
+import Data from '../models/data';
+import { getNpsGroups } from "../repositories/nps";
 
 const router = Router();
 
 const delay = () => new Promise(resolve => setTimeout(resolve, 3000))
 
 router.get("/emoticon-average", async (_, res) => {
-  // Get the average value of emoticons using the Mongo aggregation pipeline
+  const [data] = await Data.aggregate([
+    { $match: { type: 'Emoticon' } },
+    {
+      $group: {
+        _id: null,
+        avg: { $avg: "$value" },
+        total: { $sum: 1 },
+      },
+    },
+  ]);
   await delay();
-  res.json({average: 0, total: 0})
+  res.json({ average: data.avg, total: data.total });
 })
-
 
 router.get("/nps-groups", async (_, res) => {
-  // Get the number of NPS responses per group using the Mongo aggregation pipeline
-  await delay();
-  res.json({promoters: 0, detractors: 0, passives: 0, total: 0})
-})
+  const npsGroups = await getNpsGroups();
 
+  await delay();
+  res.json(npsGroups);
+})
 
 
 router.get("/nps-score", async (_, res) => {
-  // BONUS! Calculate NPS score from nps groups
+  const npsGroups = await getNpsGroups();
+  const score = Math.round((npsGroups.promoters - npsGroups.detractors) / npsGroups.total * 100);
+
   await delay();
-  res.json({score: 0})
+  res.json({ score })
 })
 
 
