@@ -5,7 +5,7 @@ import Data from "./models/data";
 import endpoints from "./endpoints"
 
 
-const app = express()
+export const app = express()
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json())
@@ -17,7 +17,7 @@ app.get('/', (_, res) => {
 
 app.use(endpoints)
 
-app.listen(port, async () => {
+export const server = app.listen(port, async () => {
   try {
     await mongoose.connect('mongodb://localhost:27019/feedbackly', { useNewUrlParser: true, useUnifiedTopology: true });
     console.log(`Example app listening at http://localhost:${port}`)
