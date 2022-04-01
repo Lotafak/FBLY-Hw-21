@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
+import cors from 'cors';
 import Data from "./models/data";
 import endpoints from "./endpoints"
 
@@ -10,6 +11,7 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json())
 
+app.use(cors());
 
 app.get('/', (_, res) => {
   res.send('Hello World!')
